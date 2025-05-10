@@ -1,0 +1,89 @@
+version: '3'
+services:
+
+  nginx:
+    container_name: nginx.balancer
+    build:
+      context: ./nginx
+      dockerfile: ./Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - app-1
+      - app-2
+    links:
+      - app-1
+      - app-2
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 100M
+
+  rabbitMQ:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: 12345
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+
+  consumer:
+    build:
+      context: ./weather-consumer
+      dockerfile: Dockerfile
+    environment:
+      SPRING_RABBITMQ_USERNAME: root
+      SPRING_RABBITMQ_PASSWORD: 12345
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - redis
+      - rabbitMQ
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  producer:
+    build:
+      context: ./weather-producer
+      dockerfile: Dockerfile
+    environment:
+      SPRING_RABBITMQ_USERNAME: root
+      SPRING_RABBITMQ_PASSWORD: 12345
+    depends_on:
+      - nginx
+      - rabbitMQ
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  redis-insights:
+    image: redislabs/redisinsight:latest
+    ports:
+      - "8001:8001"
+    environment:
+      - "REDIS_URI=redis://redis:6379"
+    depends_on:
+      - redis
