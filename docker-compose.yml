@@ -1,4 +1,3 @@
-version: '3'
 services:
 
   db:
@@ -10,46 +9,8 @@ services:
       POSTGRES_DB: weather-report
     ports:
       - "5432:5432"
-
-  rabbitMQ:
-    image: rabbitmq:3-management-alpine
-    environment:
-      RABBITMQ_DEFAULT_USER: root
-      RABBITMQ_DEFAULT_PASS: 12345
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    environment:
-      SPRING_DATA_REDIS_PORT: 6379
-    depends_on:
-      - redis
-    ports:
-      - "8080:8080"
-
-  consumer:
-    build:
-      context: ./weather-consumer
-      dockerfile: Dockerfile
-    environment:
-      SPRING_RABBITMQ_USERNAME: root
-      SPRING_RABBITMQ_PASSWORD: 12345
-      SPRING_DATA_REDIS_PORT: 6379
-    depends_on:
-      - redis
-      - rabbitMQ
-    deploy:
-      mode: replicated
-      replicas: 2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   producer:
     build:
@@ -58,23 +19,13 @@ services:
     environment:
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: 12345
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/distributed-system
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345
     depends_on:
-      - nginx
-      - rabbitMQ
-    deploy:
-      mode: replicated
-      replicas: 2
-
-  redis:
-    image: redis:latest
+      - db
     ports:
-      - "6379:6379"
+      - "8082:8082"
 
-  redis-insights:
-    image: redislabs/redisinsight:latest
-    ports:
-      - "8001:8001"
-    environment:
-      - "REDIS_URI=redis://redis:6379"
-    depends_on:
-      - redis
+volumes:
+  postgres_data:

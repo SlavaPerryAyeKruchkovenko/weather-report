@@ -1,10 +1,9 @@
 package dev.kruchkovenko.weatherproducer.feature.city.repository;
 
-import dev.kruchkovenko.weatherproducer.feature.city.repository.model.CityEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import dev.kruchkovenko.weatherproducer.feature.city.model.City;
+import reactor.core.publisher.Mono;
 
-@Repository
-public interface CityRepository extends JpaRepository<CityEntity, Long>{
-    CityEntity findByNameAndCountryCodeIgnoreCase(String name, String countryCode);
+public interface CityRepository {
+    Mono<City> getCity(String name, String countryCode);
+    Mono<City> save(City city);
 }

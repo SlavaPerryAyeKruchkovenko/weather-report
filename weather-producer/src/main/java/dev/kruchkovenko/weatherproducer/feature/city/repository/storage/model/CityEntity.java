@@ -1,4 +1,4 @@
-package dev.kruchkovenko.weatherproducer.feature.city.repository.model;
+package dev.kruchkovenko.weatherproducer.feature.city.repository.storage.model;
 
 import dev.kruchkovenko.weatherproducer.feature.city.model.Coordinate;
 import jakarta.persistence.*;
@@ -11,6 +11,17 @@ import java.util.UUID;
 @Entity
 @Table(name = "City")
 public class CityEntity {
+    public CityEntity() {
+
+    }
+
+    public CityEntity(String name, String countryCode, Coordinate coordinate) {
+        this.name = name;
+        this.countryCode = countryCode;
+        this.latitude = coordinate.latitude();
+        this.longitude = coordinate.longitude();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -54,7 +65,7 @@ public class CityEntity {
     }
 
     public void setCoordinate(@NotNull Coordinate coordinate) {
-        this.longitude = coordinate.getLongitude();
-        this.latitude = coordinate.getLatitude();
+        this.longitude = coordinate.longitude();
+        this.latitude = coordinate.latitude();
     }
 }
