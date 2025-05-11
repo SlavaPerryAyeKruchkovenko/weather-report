@@ -22,7 +22,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/weather-report
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 12345
-      COUNTRIES_LIST: "Moscow,RU;Berlin,GE"
+      COUNTRIES_LIST: "Moscow,RU;Berlin,DE;Chelyabinsk,RU"
     depends_on:
       - db
     ports:

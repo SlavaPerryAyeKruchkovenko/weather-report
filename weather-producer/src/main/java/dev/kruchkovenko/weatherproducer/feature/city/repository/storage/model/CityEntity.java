@@ -35,10 +35,10 @@ public class CityEntity {
     private String countryCode;
 
     @Column(nullable = false)
-    private Float latitude;
+    private Double latitude;
 
     @Column(nullable = false)
-    private Float longitude;
+    private Double longitude;
 
     public UUID getId() {
         return id;
@@ -48,24 +48,11 @@ public class CityEntity {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getCountryCode() {
         return countryCode;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
     public Coordinate getCoordinate() {
         return new Coordinate(this.latitude, this.longitude);
-    }
-
-    public void setCoordinate(@NotNull Coordinate coordinate) {
-        this.longitude = coordinate.longitude();
-        this.latitude = coordinate.latitude();
     }
 }

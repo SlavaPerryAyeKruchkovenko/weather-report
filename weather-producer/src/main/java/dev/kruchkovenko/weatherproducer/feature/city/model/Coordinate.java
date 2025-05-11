@@ -1,4 +1,4 @@
 package dev.kruchkovenko.weatherproducer.feature.city.model;
 
-public record Coordinate(float latitude, float longitude) {
+public record Coordinate(double latitude, double longitude) {
 }

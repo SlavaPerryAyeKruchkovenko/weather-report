@@ -8,29 +8,38 @@ import java.util.List;
 public class CityResponse {
     private List<Location> results;
     @JsonProperty("generationtime_ms")
-    private String generationtimeMs;
+    private double generationtimeMs;
 
     public static class Location {
-        private int id;
         private String name;
-        private String country;
-        @JsonProperty("country_сode")
+        private Double latitude;
+        private Double longitude;
+        @JsonProperty("country_code")
         private String countryCode;
-        private float latitude;
-        private float longitude;
 
-        public String getCountryCode(){
+        public String getCountryCode() {
             return this.countryCode;
         }
-        public String getName(){
+
+        public String getName() {
             return this.name;
         }
-        public Coordinate getCoordinate(){
-            return new Coordinate(latitude,longitude);
+
+        public Double getLatitude() {
+            return this.latitude;
+        }
+
+        public Double getLongitude() {
+            return this.longitude;
+        }
+
+        public Coordinate getCoordinate() {
+            return new Coordinate(this.latitude, this.longitude);
         }
     }
 
     public List<Location> getResults() {
         return this.results;
     }
+
 }
