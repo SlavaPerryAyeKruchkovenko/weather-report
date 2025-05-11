@@ -1,8 +1,7 @@
 package dev.kruchkovenko.weatherproducer.feature.city.repository.storage.model;
 
-import dev.kruchkovenko.weatherproducer.feature.city.model.Coordinate;
+import dev.kruchkovenko.weatherproducer.shared.Coordinate;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 

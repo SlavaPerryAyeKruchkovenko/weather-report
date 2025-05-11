@@ -1,5 +1,6 @@
 package dev.kruchkovenko.weatherproducer.feature.city.model;
 
+import dev.kruchkovenko.weatherproducer.shared.Coordinate;
 import jakarta.validation.constraints.NotNull;
 
 public class City {

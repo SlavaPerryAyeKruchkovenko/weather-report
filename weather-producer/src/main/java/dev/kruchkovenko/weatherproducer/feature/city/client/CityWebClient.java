@@ -17,7 +17,7 @@ public class CityWebClient {
     private final CityResponseMapper mapper;
     private final WebClient webClient;
 
-    public CityWebClient(@Value("${city.url}") String baseUrl, CityResponseMapper mapper) {
+    public CityWebClient(@Value("${city.api}") String baseUrl, CityResponseMapper mapper) {
         this.mapper = mapper;
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)

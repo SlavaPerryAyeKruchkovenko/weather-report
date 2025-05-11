@@ -1,7 +1,6 @@
-package dev.kruchkovenko.weatherproducer.runner;
+package dev.kruchkovenko.weatherproducer.job;
 
 import dev.kruchkovenko.weatherproducer.config.AppConfig;
-import dev.kruchkovenko.weatherproducer.config.DatabaseConfig;
 import dev.kruchkovenko.weatherproducer.feature.city.service.CityService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
