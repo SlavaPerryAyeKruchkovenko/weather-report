@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB: weather-report
     ports:
-      - "5432:5432"
+      - "5742:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -19,9 +19,10 @@ services:
     environment:
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: 12345
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/distributed-system
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/weather-report
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 12345
+      COUNTRIES_LIST: "Moscow,RU;Berlin,GE"
     depends_on:
       - db
     ports:
