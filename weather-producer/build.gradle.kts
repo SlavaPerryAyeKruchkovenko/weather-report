@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    //Rabbit
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
     //Client
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     //DB

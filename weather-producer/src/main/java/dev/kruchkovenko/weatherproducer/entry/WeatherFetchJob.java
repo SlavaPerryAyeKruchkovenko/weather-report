@@ -38,12 +38,14 @@ public class WeatherFetchJob {
 
     @Scheduled(fixedRateString = "#{${server.interval.seconds} * 1000}")
     public void fetchAndStoreWeather() throws IllegalArgumentException {
-        Flux.fromIterable(this.coordinates.keySet())
+        var weathers = Flux.fromIterable(this.coordinates.keySet())
                 .parallel()
                 .flatMap(this::getWeatherByCity)
                 .sequential()
-                .then()
-                .subscribe();
+                .collectList()
+                .doOnNext(list -> log.info(String.format("Found weathers %s", list)))
+                .block();
+        this.weatherService.saveAllWeathers(weathers);
     }
 
     private Flux<Weather> getWeatherByCity(ParamCity city) {
@@ -52,8 +54,7 @@ public class WeatherFetchJob {
             coordinate = fetchCityCoordinate(city);
             this.coordinates.put(city, Optional.of(coordinate));
         }
-        return weatherService.fetchWeathersByCoordinate(coordinate)
-                .doOnNext(saved -> log.info(String.format("Saved weather: %s", saved)));
+        return weatherService.fetchWeathersByCoordinate(coordinate);
     }
 
     private Coordinate fetchCityCoordinate(ParamCity param) throws IllegalArgumentException {
