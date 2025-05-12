@@ -11,6 +11,11 @@ services:
       - "5742:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d weather-report" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitMQ:
     image: rabbitmq:3-management-alpine
@@ -21,16 +26,18 @@ services:
       - "5672:5672"
       - "15672:15672"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      test: [ "CMD", "rabbitmq-diagnostics", "check_port_connectivity" ]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 20s
 
   producer:
     build:
       context: ./weather-producer
       dockerfile: Dockerfile
     environment:
+      SPRING_RABBITMQ_HOST: rabbitMQ
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: 12345
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/weather-report
@@ -43,8 +50,10 @@ services:
       COUNTRIES_LIST: "Moscow,RU;Berlin,DE;Chelyabinsk,RU"
       SERVER_INTERVAL_SECONDS: 300
     depends_on:
-      - db
-      - rabbitMQ
+      db:
+        condition: service_healthy
+      rabbitMQ:
+        condition: service_healthy
     ports:
       - "8082:8082"
 
