@@ -44,6 +44,7 @@ services:
       SERVER_INTERVAL_SECONDS: 300
     depends_on:
       - db
+      - rabbitMQ
     ports:
       - "8082:8082"
 
