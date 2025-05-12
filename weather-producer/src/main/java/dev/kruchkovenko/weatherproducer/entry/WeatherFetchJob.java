@@ -4,12 +4,14 @@ import dev.kruchkovenko.weatherproducer.config.AppConfig;
 import dev.kruchkovenko.weatherproducer.feature.city.model.City;
 import dev.kruchkovenko.weatherproducer.feature.city.model.ParamCity;
 import dev.kruchkovenko.weatherproducer.feature.city.service.CityService;
+import dev.kruchkovenko.weatherproducer.feature.weather.model.Weather;
 import dev.kruchkovenko.weatherproducer.feature.weather.service.WeatherService;
 import dev.kruchkovenko.weatherproducer.shared.Coordinate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -36,17 +38,22 @@ public class WeatherFetchJob {
 
     @Scheduled(fixedRateString = "#{${server.interval.seconds} * 1000}")
     public void fetchAndStoreWeather() throws IllegalArgumentException {
-        log.info("Fetching weather data...");
-        for (ParamCity param : this.coordinates.keySet()) {
-            var coordinate = this.coordinates.get(param).orElse(null);
-            if (coordinate == null) {
-                coordinate = fetchCityCoordinate(param);
-                this.coordinates.put(param, Optional.of(coordinate));
-            }
-            weatherService.fetchWeathersByCoordinate(coordinate)
-                    .doOnNext(saved -> log.info(String.format("Saved weather: %s", saved)))
-                    .subscribe();
+        Flux.fromIterable(this.coordinates.keySet())
+                .parallel()
+                .flatMap(this::getWeatherByCity)
+                .sequential()
+                .then()
+                .subscribe();
+    }
+
+    private Flux<Weather> getWeatherByCity(ParamCity city) {
+        var coordinate = this.coordinates.get(city).orElse(null);
+        if (coordinate == null) {
+            coordinate = fetchCityCoordinate(city);
+            this.coordinates.put(city, Optional.of(coordinate));
         }
+        return weatherService.fetchWeathersByCoordinate(coordinate)
+                .doOnNext(saved -> log.info(String.format("Saved weather: %s", saved)));
     }
 
     private Coordinate fetchCityCoordinate(ParamCity param) throws IllegalArgumentException {
