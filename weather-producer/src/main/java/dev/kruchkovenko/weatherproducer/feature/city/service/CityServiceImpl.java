@@ -1,6 +1,7 @@
 package dev.kruchkovenko.weatherproducer.feature.city.service;
 
 import dev.kruchkovenko.weatherproducer.feature.city.client.CityWebClient;
+import dev.kruchkovenko.weatherproducer.feature.city.model.City;
 import dev.kruchkovenko.weatherproducer.feature.city.model.ParamCity;
 import dev.kruchkovenko.weatherproducer.feature.city.repository.CityRepository;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,17 @@ public class CityServiceImpl implements CityService {
     public Mono<Void> syncCities(List<ParamCity> cities) {
         return Flux.fromIterable(cities)
                 .parallel()
-                .flatMap(city ->
-                        cityRepository.getCity(city.getName(), city.getCountryCode())
-                                .switchIfEmpty(
-                                        cityWebClient.searchCity(city.getName(), city.getCountryCode())
-                                                .flatMap(cityRepository::save)
-                                )
+                .flatMap(this::getCity
                 )
                 .sequential()
                 .then();
+    }
+
+    @Override
+    public Mono<City> getCity(ParamCity city) {
+        return cityRepository.getCity(city.getName(), city.getCountryCode()).switchIfEmpty(
+                cityWebClient.searchCity(city.getName(), city.getCountryCode())
+                        .flatMap(cityRepository::save)
+        );
     }
 }
