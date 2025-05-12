@@ -38,6 +38,6 @@ public class MeteoWebClient {
                 .retrieve()
                 .bodyToMono(MeteoWeatherResponse.class)
                 .map(response -> mapper.transform(response, LocalDateTime.now()))
-                .doOnError(e -> log.error("Failed to fetch city data", e.getCause()));
+                .doOnError(e -> log.error("Failed to fetch weather's data from Meteo", e.getCause()));
     }
 }

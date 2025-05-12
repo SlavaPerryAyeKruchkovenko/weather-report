@@ -23,15 +23,15 @@ public class MeteoWeatherResponse {
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         private LocalDateTime time;
 
-        public double getTemperature() {
+        public Double getTemperature() {
             return this.temperature;
         }
 
-        public double getWindspeed() {
+        public Double getWindspeed() {
             return this.windspeed;
         }
 
-        public int getWinddirection() {
+        public Integer getWinddirection() {
             return this.winddirection;
         }
 
