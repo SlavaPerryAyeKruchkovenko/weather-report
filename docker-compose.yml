@@ -1,24 +1,21 @@
-version: '3'
 services:
 
-  nginx:
-    container_name: nginx.balancer
-    build:
-      context: ./nginx
-      dockerfile: ./Dockerfile
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: weather-report
     ports:
-      - "80:80"
-    depends_on:
-      - app-1
-      - app-2
-    links:
-      - app-1
-      - app-2
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 100M
+      - "5742:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d weather-report" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitMQ:
     image: rabbitmq:3-management-alpine
@@ -29,61 +26,36 @@ services:
       - "5672:5672"
       - "15672:15672"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      test: [ "CMD", "rabbitmq-diagnostics", "check_port_connectivity" ]
       interval: 30s
       timeout: 10s
       retries: 5
-
-  app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    environment:
-      SPRING_DATA_REDIS_PORT: 6379
-    depends_on:
-      - redis
-    ports:
-      - "8080:8080"
-
-  consumer:
-    build:
-      context: ./weather-consumer
-      dockerfile: Dockerfile
-    environment:
-      SPRING_RABBITMQ_USERNAME: root
-      SPRING_RABBITMQ_PASSWORD: 12345
-      SPRING_DATA_REDIS_PORT: 6379
-    depends_on:
-      - redis
-      - rabbitMQ
-    deploy:
-      mode: replicated
-      replicas: 2
+      start_period: 20s
 
   producer:
     build:
       context: ./weather-producer
       dockerfile: Dockerfile
     environment:
+      SPRING_RABBITMQ_HOST: rabbitMQ
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: 12345
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/weather-report
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345
+      CITY_API: "https://geocoding-api.open-meteo.com/v1/"
+      YANDEX_API: "https://api.weather.yandex.ru/v2/"
+      YANDEX_API_KEY: "2962c31e-7a37-4071-ab1f-2b10fddb5b08"
+      METEO_API: "https://api.open-meteo.com/v1/"
+      COUNTRIES_LIST: "Moscow,RU;Berlin,DE;Chelyabinsk,RU"
+      SERVER_INTERVAL_SECONDS: 300
     depends_on:
-      - nginx
-      - rabbitMQ
-    deploy:
-      mode: replicated
-      replicas: 2
-
-  redis:
-    image: redis:latest
+      db:
+        condition: service_healthy
+      rabbitMQ:
+        condition: service_healthy
     ports:
-      - "6379:6379"
+      - "8082:8082"
 
-  redis-insights:
-    image: redislabs/redisinsight:latest
-    ports:
-      - "8001:8001"
-    environment:
-      - "REDIS_URI=redis://redis:6379"
-    depends_on:
-      - redis
+volumes:
+  postgres_data:

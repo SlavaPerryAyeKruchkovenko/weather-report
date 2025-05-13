@@ -1,0 +1,43 @@
+package dev.kruchkovenko.weatherproducer.config;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import javax.sql.DataSource;
+
+@Configuration
+public class DatabaseConfig {
+    private static final Log log = LogFactory.getLog(DatabaseConfig.class);
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String driverClassName;
+
+    @Bean
+    public DataSource dataSource() {
+        log.info("Connecting to database...");
+        var dataSource = new DriverManagerDataSource();
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        dataSource.setDriverClassName(driverClassName);
+        return dataSource;
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+}
