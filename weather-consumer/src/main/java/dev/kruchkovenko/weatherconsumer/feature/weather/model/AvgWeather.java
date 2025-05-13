@@ -1,20 +1,35 @@
 package dev.kruchkovenko.weatherconsumer.feature.weather.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class AvgWeather {
-    private final String city;
-    private final String countryCode;
-    private final Double temperature;
-    private final LocalDateTime measureTime;
+@RedisHash("AvgWeather")
+public class AvgWeather implements Serializable {
+    @Id
+    private String id;
+    private String city;
+    private String countryCode;
+    private Double temperature;
+    private LocalDateTime measureTime;
 
-    public AvgWeather(String city, String countryCode, LocalDateTime measureTime, Double temperature) {
+    public AvgWeather() {
+    }
+
+    public AvgWeather(String id, String city, String countryCode, LocalDateTime measureTime, Double temperature) {
+        this.id = id;
         this.city = city;
         this.countryCode = countryCode;
         this.temperature = temperature;
         this.measureTime = measureTime;
     }
 
+    public String getId() {
+        return this.id;
+    }
 
     public String getCity() {
         return this.city;
@@ -35,10 +50,17 @@ public class AvgWeather {
     @Override
     public String toString() {
         return String.format(
-                "{ temperature : %s , city : %s , countryCode : %s }",
+                "{ id : %s , temperature : %s , city : %s , countryCode : %s , measureTime : %s }",
+                id,
                 temperature,
                 city,
-                countryCode
+                countryCode,
+                measureTime
         );
+    }
+
+    @TimeToLive
+    public long getTimeToLive() {
+        return 3 * 24 * 60 * 60;
     }
 }

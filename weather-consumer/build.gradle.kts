@@ -18,6 +18,11 @@ repositories {
 }
 
 dependencies {
+	//Redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	//Serializer
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.7")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
 	//Rabbit
 	implementation("org.springframework.boot:spring-boot-starter-amqp")
 

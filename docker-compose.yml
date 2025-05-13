@@ -92,6 +92,8 @@ services:
       SPRING_RABBITMQ_HOST: rabbitMQ
       SPRING_RABBITMQ_USERNAME: root
       SPRING_RABBITMQ_PASSWORD: 12345
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     depends_on:
       rabbitMQ:
         condition: service_healthy
