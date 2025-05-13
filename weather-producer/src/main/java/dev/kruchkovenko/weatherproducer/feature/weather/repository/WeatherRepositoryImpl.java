@@ -4,8 +4,6 @@ import dev.kruchkovenko.weatherproducer.feature.weather.model.Weather;
 import dev.kruchkovenko.weatherproducer.feature.weather.repository.producer.WeatherProducer;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public class WeatherRepositoryImpl implements WeatherRepository {
     private final WeatherProducer producer;
@@ -15,7 +13,7 @@ public class WeatherRepositoryImpl implements WeatherRepository {
     }
 
     @Override
-    public void saveAllWeather(List<Weather> weathers) {
-        this.producer.sendWeathers(weathers);
+    public void saveWeather(Weather weather) {
+        this.producer.sendWeathers(weather);
     }
 }

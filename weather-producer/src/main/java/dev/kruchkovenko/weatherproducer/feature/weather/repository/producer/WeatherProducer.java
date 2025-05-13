@@ -5,8 +5,6 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class WeatherProducer {
     private final RabbitTemplate rabbitTemplate;
@@ -17,7 +15,7 @@ public class WeatherProducer {
         this.queue = queue;
     }
 
-    public void sendWeathers(List<Weather> weathers) {
-        rabbitTemplate.convertAndSend(queue.getName(), weathers);
+    public void sendWeathers(Weather weather) {
+        rabbitTemplate.convertAndSend(queue.getName(), weather);
     }
 }

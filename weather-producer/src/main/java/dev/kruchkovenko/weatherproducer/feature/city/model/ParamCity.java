@@ -1,19 +1,24 @@
 package dev.kruchkovenko.weatherproducer.feature.city.model;
 
 public class ParamCity {
-    public ParamCity(String name, String countryCode) {
-        this.name = name;
+    public ParamCity(String cityName, String countryCode) {
+        this.cityName = cityName;
         this.countryCode = countryCode;
     }
 
-    private final String name;
+    private final String cityName;
     private final String countryCode;
 
-    public String getName() {
-        return this.name;
+    public String getCityName() {
+        return this.cityName;
     }
 
     public String getCountryCode() {
         return this.countryCode;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ParamCity{cityName='%s', countryCode='%s'}", cityName, countryCode);
     }
 }

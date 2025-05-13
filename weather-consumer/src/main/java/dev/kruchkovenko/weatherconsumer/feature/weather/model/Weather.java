@@ -1,4 +1,4 @@
-package dev.kruchkovenko.weatherproducer.feature.weather.model;
+package dev.kruchkovenko.weatherconsumer.feature.weather.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
