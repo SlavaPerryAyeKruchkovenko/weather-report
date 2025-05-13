@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
+
 public class MeteoWeatherResponse {
     @JsonProperty("generationtime_ms")
     private Double generationtimeMs;

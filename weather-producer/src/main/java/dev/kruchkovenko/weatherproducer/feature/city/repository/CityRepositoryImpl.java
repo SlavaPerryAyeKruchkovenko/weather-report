@@ -7,13 +7,18 @@ import dev.kruchkovenko.weatherproducer.feature.city.repository.storage.StorageC
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+
 @Repository
 public class CityRepositoryImpl implements CityRepository {
     private final StorageCityRepository storageCityRepository;
     private final CityEntityMapper entityMapper;
     private final CityMapper mapper;
 
-    public CityRepositoryImpl(StorageCityRepository storageCityRepository, CityEntityMapper entityMapper, CityMapper mapper) {
+    public CityRepositoryImpl(
+            StorageCityRepository storageCityRepository,
+            CityEntityMapper entityMapper,
+            CityMapper mapper
+    ) {
         this.storageCityRepository = storageCityRepository;
         this.entityMapper = entityMapper;
         this.mapper = mapper;
@@ -21,7 +26,10 @@ public class CityRepositoryImpl implements CityRepository {
 
     @Override
     public Mono<City> getCity(String name, String countryCode) {
-        return Mono.justOrEmpty(entityMapper.transform(storageCityRepository.findByNameAndCountryCodeIgnoreCase(name, countryCode)));
+        return Mono.justOrEmpty(entityMapper.transform(storageCityRepository.findByNameAndCountryCodeIgnoreCase(
+                name,
+                countryCode
+        )));
     }
 
     public Mono<City> save(City city) {

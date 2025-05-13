@@ -3,6 +3,7 @@ package dev.kruchkovenko.weatherproducer.feature.city.model;
 import dev.kruchkovenko.weatherproducer.shared.Coordinate;
 import jakarta.validation.constraints.NotNull;
 
+
 public class City {
 
     public City(String id, String name, String countryCode, Coordinate coordinate) {

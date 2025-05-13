@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface RedisWeatherRepository extends CrudRepository<AvgWeather, String> {
     List<AvgWeather> findByCityAndCountryCode(String city, String countryCode);

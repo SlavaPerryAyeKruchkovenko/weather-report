@@ -4,6 +4,7 @@ import dev.kruchkovenko.weatherconsumer.feature.weather.model.AvgWeather;
 import dev.kruchkovenko.weatherconsumer.feature.weather.repository.RedisWeatherRepository;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class WeatherServiceImpl implements WeatherService {
     private final RedisWeatherRepository repository;
