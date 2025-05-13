@@ -1,15 +1,20 @@
 package dev.kruchkovenko.app.feature.service;
 
-import dev.kruchkovenko.app.feature.model.AvgWeather;
+import dev.kruchkovenko.app.feature.model.Weather;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 
 public interface WeatherService {
-    List<AvgWeather> getAllWeatherByCityAndCountryCodeAndTime(
+    List<Weather> getAllWeather(
             String city,
             String countryCode,
-            LocalDateTime measureTime
+            LocalDate measureTime
+    );
+
+    List<Weather> getAllWeather(
+            String city,
+            String countryCode
     );
 }
