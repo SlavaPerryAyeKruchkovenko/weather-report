@@ -18,18 +18,21 @@ repositories {
 }
 
 dependencies {
-    //Redis
+    // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    //Serializer
+    // Serializer
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.7")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.0")
-    //Rabbit
+    // Rabbit
     implementation("org.springframework.boot:spring-boot-starter-amqp")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter")
+
+    // Spring test
+    testImplementation("org.apache.commons:commons-lang3:3.17.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
