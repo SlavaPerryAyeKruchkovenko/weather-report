@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,9 +40,11 @@ class WeatherServiceTest {
 
     @Test
     void getAllWeatherWithDate() {
-        var avgWeather1 = new AvgWeather("1", TEST_CITY, TEST_COUNTRY, TEST_DATETIME.minusDays(1), 20.0);
-        var avgWeather2 = new AvgWeather("2", TEST_CITY, TEST_COUNTRY, TEST_DATETIME, 21.0);
-        var weather2 = new Weather(TEST_CITY, TEST_COUNTRY, TEST_DATETIME, 21.0);
+        var randomTemperature1 = new Random().nextDouble();
+        var randomTemperature2 = new Random().nextDouble();
+        var avgWeather1 = new AvgWeather("1", TEST_CITY, TEST_COUNTRY, TEST_DATETIME.minusDays(1), randomTemperature1);
+        var avgWeather2 = new AvgWeather("2", TEST_CITY, TEST_COUNTRY, TEST_DATETIME, randomTemperature2);
+        var weather2 = new Weather(TEST_CITY, TEST_COUNTRY, TEST_DATETIME, randomTemperature2);
 
         when(repository.findByCityAndCountryCode(TEST_CITY, TEST_COUNTRY))
                 .thenReturn(List.of(avgWeather1, avgWeather2));
@@ -58,9 +61,11 @@ class WeatherServiceTest {
 
     @Test
     void getAllWeatherWithoutDate() {
-        var avgWeather1 = new AvgWeather("1", TEST_CITY, TEST_COUNTRY, TEST_DATETIME.minusDays(1), 20.0);
-        var avgWeather2 = new AvgWeather("2", TEST_CITY, TEST_COUNTRY, TEST_DATETIME, 21.0);
-        var weather2 = new Weather(TEST_CITY, TEST_COUNTRY, TEST_DATETIME, 21.0);
+        var randomTemperature1 = new Random().nextDouble();
+        var randomTemperature2 = new Random().nextDouble();
+        var avgWeather1 = new AvgWeather("1", TEST_CITY, TEST_COUNTRY, TEST_DATETIME.minusDays(1), randomTemperature1);
+        var avgWeather2 = new AvgWeather("2", TEST_CITY, TEST_COUNTRY, TEST_DATETIME, randomTemperature2);
+        var weather2 = new Weather(TEST_CITY, TEST_COUNTRY, TEST_DATETIME, randomTemperature2);
 
         when(repository.findByCityAndCountryCode(TEST_CITY, TEST_COUNTRY))
                 .thenReturn(List.of(avgWeather1, avgWeather2));

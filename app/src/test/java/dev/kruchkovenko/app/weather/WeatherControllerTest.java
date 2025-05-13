@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,7 +34,7 @@ class WeatherControllerTest {
     private final String TEST_CITY = "Moscow";
     private final String TEST_COUNTRY = "RU";
     private final LocalDate TEST_DATE = LocalDate.now();
-    private final Weather TEST_WEATHER = new Weather(TEST_CITY, TEST_COUNTRY, LocalDateTime.now(), 21.0);
+    private final Weather TEST_WEATHER = new Weather(TEST_CITY, TEST_COUNTRY, LocalDateTime.now(), new Random().nextDouble());
 
     @Test
     void getAllWeatherWithDate() {
