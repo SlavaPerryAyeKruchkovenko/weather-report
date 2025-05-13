@@ -5,6 +5,8 @@ import dev.kruchkovenko.app.feature.service.WeatherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +23,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 @RequestMapping(path = "/api/v1/weather")
 @Tag(name = "Weather API", description = "Operations with weather data")
 public class WeatherController {
-
+    private static final Log log = LogFactory.getLog(WeatherController.class);
     private final WeatherService weatherService;
 
     public WeatherController(WeatherService weatherService) {
@@ -46,11 +48,16 @@ public class WeatherController {
             @RequestParam(name = "date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        if (date == null) {
-            var weathers = weatherService.getAllWeather(city, countryCode);
+        try {
+            if (date == null) {
+                var weathers = weatherService.getAllWeather(city, countryCode);
+                return ResponseEntity.ok(weathers);
+            }
+            var weathers = weatherService.getAllWeather(city, countryCode, date);
             return ResponseEntity.ok(weathers);
+        } catch (Exception e) {
+            log.error("Error getting weather data", e);
+            return ResponseEntity.badRequest().build();
         }
-        var weathers = weatherService.getAllWeather(city, countryCode, date);
-        return ResponseEntity.ok(weathers);
     }
 }
