@@ -1,89 +1,136 @@
-version: '3'
 services:
 
-  nginx:
-    container_name: nginx.balancer
-    build:
-      context: ./nginx
-      dockerfile: ./Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - app-1
-      - app-2
-    links:
-      - app-1
-      - app-2
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 100M
+    db:
+        image: postgres:latest
+        restart: always
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: 12345
+            POSTGRES_DB: weather-report
+        ports:
+            - "5742:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U root -d weather-report" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  rabbitMQ:
-    image: rabbitmq:3-management-alpine
-    environment:
-      RABBITMQ_DEFAULT_USER: root
-      RABBITMQ_DEFAULT_PASS: 12345
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    rabbitMQ:
+        image: rabbitmq:3-management-alpine
+        restart: always
+        environment:
+            RABBITMQ_DEFAULT_USER: root
+            RABBITMQ_DEFAULT_PASS: 12345
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        healthcheck:
+            test: [ "CMD", "rabbitmq-diagnostics", "check_port_connectivity" ]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+            start_period: 20s
 
-  app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    environment:
-      SPRING_DATA_REDIS_PORT: 6379
-    depends_on:
-      - redis
-    ports:
-      - "8080:8080"
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - "6379:6379"
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 5s
+            timeout: 3s
+            retries: 3
+            start_period: 5s
 
-  consumer:
-    build:
-      context: ./weather-consumer
-      dockerfile: Dockerfile
-    environment:
-      SPRING_RABBITMQ_USERNAME: root
-      SPRING_RABBITMQ_PASSWORD: 12345
-      SPRING_DATA_REDIS_PORT: 6379
-    depends_on:
-      - redis
-      - rabbitMQ
-    deploy:
-      mode: replicated
-      replicas: 2
+    redis-insights:
+        image: redislabs/redisinsight:latest
+        ports:
+            - "8001:8001"
+        environment:
+            - "REDIS_URI=redis://redis:6379"
+        depends_on:
+            - redis
 
-  producer:
-    build:
-      context: ./weather-producer
-      dockerfile: Dockerfile
-    environment:
-      SPRING_RABBITMQ_USERNAME: root
-      SPRING_RABBITMQ_PASSWORD: 12345
-    depends_on:
-      - nginx
-      - rabbitMQ
-    deploy:
-      mode: replicated
-      replicas: 2
+    producer:
+        build:
+            context: ./weather-producer
+            dockerfile: Dockerfile
+        environment:
+            SPRING_RABBITMQ_HOST: rabbitMQ
+            SPRING_RABBITMQ_USERNAME: root
+            SPRING_RABBITMQ_PASSWORD: 12345
+            SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/weather-report
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: 12345
+            CITY_API: "https://geocoding-api.open-meteo.com/v1/"
+            YANDEX_API: "https://api.weather.yandex.ru/v2/"
+            YANDEX_API_KEY: "2962c31e-7a37-4071-ab1f-2b10fddb5b08"
+            METEO_API: "https://api.open-meteo.com/v1/"
+            COUNTRIES_LIST: "Moscow,RU;Berlin,DE;Chelyabinsk,RU"
+            SERVER_INTERVAL_SECONDS: 300
+        depends_on:
+            db:
+                condition: service_healthy
+            rabbitMQ:
+                condition: service_healthy
+        ports:
+            - "8082:8082"
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -qO- http://producer:8082/api/ready | grep -q true" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
+    consumer:
+        build:
+            context: ./weather-consumer
+            dockerfile: Dockerfile
+        environment:
+            SPRING_RABBITMQ_HOST: rabbitMQ
+            SPRING_RABBITMQ_USERNAME: root
+            SPRING_RABBITMQ_PASSWORD: 12345
+            SPRING_DATA_REDIS_HOST: redis
+            SPRING_DATA_REDIS_PORT: 6379
+        depends_on:
+            rabbitMQ:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            producer:
+                condition: service_healthy
+        ports:
+            - "8081:8081"
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -qO- http://consumer:8081/api/ready | grep -q true" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  redis-insights:
-    image: redislabs/redisinsight:latest
-    ports:
-      - "8001:8001"
-    environment:
-      - "REDIS_URI=redis://redis:6379"
-    depends_on:
-      - redis
+    app:
+        build:
+            context: ./app
+            dockerfile: Dockerfile
+        environment:
+            SPRING_RABBITMQ_HOST: rabbitMQ
+            SPRING_RABBITMQ_USERNAME: root
+            SPRING_RABBITMQ_PASSWORD: 12345
+            SPRING_DATA_REDIS_HOST: redis
+            SPRING_DATA_REDIS_PORT: 6379
+        depends_on:
+            redis:
+                condition: service_healthy
+            consumer:
+                condition: service_healthy
+        ports:
+            - "8080:8080"
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -qO- http://app:8080/api/ready | grep -q true" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    postgres_data:

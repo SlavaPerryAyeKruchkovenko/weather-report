@@ -10,10 +10,10 @@ RUN ./gradlew clean build --no-daemon
 FROM openjdk:17-jdk-alpine
 
 RUN addgroup -S weather-report && adduser -S spring -G weather-report
-USER spring:spring
+USER spring:weather-report
 
 COPY --from=builder /app/build/libs/*.jar /app.jar
 
-EXPOSE 8080
+EXPOSE 8082
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
