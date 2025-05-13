@@ -2,6 +2,9 @@ package dev.kruchkovenko.app.rest.v1;
 
 import dev.kruchkovenko.app.feature.model.Weather;
 import dev.kruchkovenko.app.feature.service.WeatherService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(path = "/api/v1/weather")
+@Tag(name = "Weather API", description = "Operations with weather data")
 public class WeatherController {
 
     private final WeatherService weatherService;
@@ -27,6 +31,14 @@ public class WeatherController {
     @GetMapping(
             value = "/",
             produces = APPLICATION_JSON_VALUE
+    )
+    @Operation(
+            summary = "Get weather by city and country",
+            description = "Returns weather data for specified location",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Success"),
+                    @ApiResponse(responseCode = "400", description = "Bad Request")
+            }
     )
     public ResponseEntity<List<Weather>> getAllWeather(
             @RequestParam(name = "city") String city,

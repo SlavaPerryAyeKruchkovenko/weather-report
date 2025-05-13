@@ -18,7 +18,9 @@ repositories {
 }
 
 dependencies {
-    //Redis
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    // Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
