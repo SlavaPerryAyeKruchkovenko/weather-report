@@ -1,4 +1,5 @@
-package dev.kruchkovenko.weatherproducer.rest;
+package dev.kruchkovenko.weatherconsumer.rest;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

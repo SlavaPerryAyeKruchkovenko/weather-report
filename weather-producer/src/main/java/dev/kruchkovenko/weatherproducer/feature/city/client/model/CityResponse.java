@@ -5,10 +5,12 @@ import dev.kruchkovenko.weatherproducer.shared.Coordinate;
 
 import java.util.List;
 
+
 public class CityResponse {
     private List<Location> results;
     @JsonProperty("generationtime_ms")
     private Double generationtimeMs;
+
 
     public static class Location {
         private String name;

@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
+
 @Configuration
 public class DatabaseConfig {
     private static final Log log = LogFactory.getLog(DatabaseConfig.class);

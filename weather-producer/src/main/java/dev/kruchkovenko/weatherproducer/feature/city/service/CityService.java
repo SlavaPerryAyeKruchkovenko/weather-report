@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface CityService {
     Mono<Void> syncCities(List<ParamCity> cities);
+
     Mono<City> getCity(ParamCity city);
 }

@@ -1,6 +1,6 @@
-package dev.kruchkovenko.weatherconsumer.config;
+package dev.kruchkovenko.app.config;
 
-import dev.kruchkovenko.weatherconsumer.feature.weather.model.AvgWeather;
+import dev.kruchkovenko.app.feature.model.AvgWeather;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

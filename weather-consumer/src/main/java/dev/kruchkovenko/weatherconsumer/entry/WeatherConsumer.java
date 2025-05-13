@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+
 @Component
 public class WeatherConsumer {
     private static final Log log = LogFactory.getLog(WeatherConsumer.class);

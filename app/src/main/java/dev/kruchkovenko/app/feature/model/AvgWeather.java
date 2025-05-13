@@ -1,4 +1,4 @@
-package dev.kruchkovenko.weatherconsumer.feature.weather.model;
+package dev.kruchkovenko.app.feature.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -18,6 +18,7 @@ public class AvgWeather implements Serializable {
     @Indexed
     private String countryCode;
     private Double temperature;
+    @Indexed
     private LocalDateTime measureTime;
 
     public AvgWeather() {

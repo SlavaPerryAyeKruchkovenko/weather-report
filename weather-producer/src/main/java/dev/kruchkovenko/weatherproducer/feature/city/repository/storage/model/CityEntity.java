@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+
 @Entity
 @Table(name = "City")
 public class CityEntity {
