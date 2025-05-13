@@ -1,4 +1,9 @@
-package dev.kruchkovenko.weatherproducer.feature.weather.model;
+package dev.kruchkovenko.weatherconsumer.feature.weather.model;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,9 +13,16 @@ public class Weather {
     private final String city;
     private final String countryCode;
     private final List<Forecast> forecasts;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private final LocalDateTime measureTime;
 
-    public Weather(String city, String countryCode, LocalDateTime measureTime, List<Forecast> forecasts) {
+    @JsonCreator
+    public Weather(
+            @JsonProperty("city") String city,
+            @JsonProperty("countryCode") String countryCode,
+            @JsonProperty("measureTime") LocalDateTime measureTime,
+            @JsonProperty("forecasts") List<Forecast> forecasts
+    ) {
         this.city = city;
         this.countryCode = countryCode;
         this.forecasts = forecasts;
@@ -20,8 +32,8 @@ public class Weather {
     public static class Forecast {
         private final Double temperature;
 
-
-        public Forecast(Double temperature) {
+        @JsonCreator
+        public Forecast(@JsonProperty("temperature") Double temperature) {
             this.temperature = temperature;
         }
 

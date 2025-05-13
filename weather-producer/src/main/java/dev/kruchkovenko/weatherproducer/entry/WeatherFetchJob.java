@@ -11,8 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,33 +39,37 @@ public class WeatherFetchJob {
 
     @Scheduled(fixedRateString = "#{${server.interval.seconds} * 1000}")
     public void fetchAndStoreWeather() throws IllegalArgumentException {
-        var weathers = Flux.fromIterable(this.coordinates.keySet())
-                .parallel()
-                .flatMap(this::getWeatherByCity)
-                .sequential()
-                .collectList()
-                .doOnNext(list -> log.info(String.format("Found weathers %s", list)))
-                .block();
-        this.weatherService.saveAllWeathers(weathers);
+        for (var param : coordinates.keySet()) {
+            getWeatherByCity(param)
+                    .doOnNext(weather -> log.info(String.format("Fetching weather for city: %s", param)))
+                    .doOnNext(weatherService::saveWeather).subscribe();
+        }
     }
 
-    private Flux<Weather> getWeatherByCity(ParamCity city) {
+    private Mono<Weather> getWeatherByCity(ParamCity city) {
         var coordinate = this.coordinates.get(city).orElse(null);
         if (coordinate == null) {
             coordinate = fetchCityCoordinate(city);
             this.coordinates.put(city, Optional.of(coordinate));
         }
-        return weatherService.fetchWeathersByCoordinate(coordinate);
+        return weatherService
+                .fetchTemperaturesByCoordinate(coordinate)
+                .collectList()
+                .flatMap(temps -> Mono.just(new Weather(
+                        city.getCityName(),
+                        city.getCountryCode(),
+                        LocalDateTime.now(),
+                        temps.stream().map(Weather.Forecast::new).toList())));
     }
 
     private Coordinate fetchCityCoordinate(ParamCity param) throws IllegalArgumentException {
         City city = cityService.getCity(param)
                 .blockOptional()
                 .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("City %s not found", param.getName())));
+                        String.format("City %s not found", param.getCityName())));
 
         return Optional.ofNullable(city.getCoordinate())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("Coordinate not found for city %s", param.getName())));
+                        String.format("Coordinate not found for city %s", param.getCityName())));
     }
 }

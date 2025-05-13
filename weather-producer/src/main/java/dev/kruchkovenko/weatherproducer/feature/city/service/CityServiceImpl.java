@@ -32,8 +32,8 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public Mono<City> getCity(ParamCity city) {
-        return cityRepository.getCity(city.getName(), city.getCountryCode()).switchIfEmpty(
-                cityWebClient.searchCity(city.getName(), city.getCountryCode())
+        return cityRepository.getCity(city.getCityName(), city.getCountryCode()).switchIfEmpty(
+                cityWebClient.searchCity(city.getCityName(), city.getCountryCode())
                         .flatMap(cityRepository::save)
         );
     }
