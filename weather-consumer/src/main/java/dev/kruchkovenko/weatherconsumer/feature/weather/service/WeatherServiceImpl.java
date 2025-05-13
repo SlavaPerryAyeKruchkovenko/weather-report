@@ -15,6 +15,5 @@ public class WeatherServiceImpl implements WeatherService {
     @Override
     public void save(AvgWeather avgWeather) {
         repository.save(avgWeather);
-        repository.findAll().forEach(System.out::println);
     }
 }
