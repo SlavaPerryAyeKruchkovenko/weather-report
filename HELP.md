@@ -4,20 +4,28 @@ The following was discovered as part of building this project:
 
 * The original package name 'dev.kruchkovenko.weather report' is invalid and this project uses '
   dev.kruchkovenko.weather.report' instead.
+# Конфигурация проекта
 
-# Getting Started
+## Настройка городов
+Для настройки городов, по которым будет получиться прогноз погоды в файле docker-compose.yml <br/>
+Для сервиса producer задайте переменную ```COUNTRIES_LIST``` к примеру ```Moscow,RU;Berlin,DE;Paris,FR``` <br/>
+## Настройка частоты обращения к сервисам прогноза погоды
 
-### Reference Documentation
+Для настройки частоты обращения,в файле docker-compose.yml <br/>
+Для сервиса producer задайте переменную ```SERVER_INTERVAL_SECONDS``` к примеру ```300``` <br/>
+Данная переменная показывает как часто будет происходить запрос к апи сервисам в секундах<br/>
+то есть ли вы напишите 5, то запрос будет отравляться каждые 5 секунд. <br/>
+# Как запустить проект
 
-For further reference, please consider the following sections:
+## Требования
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.5/gradle-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.5/gradle-plugin/packaging-oci-image.html)
+Наличие на устройстве docker-compose
 
-### Additional Links
+## Запуск
 
-These additional references should also help you:
+Соберите контейнер ```docker-compose build``` <br/>
+Запустите контейнер ```docker-compose up```
 
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+# Схема приложения
 
+![img.png](img.png)
